@@ -15,31 +15,37 @@ public class ParkingLotTest {
     }
 
     @Test
-    public void givenAVehicle_WhenParked_ShouldReturnTrue() throws  ParkingLotException {
-        boolean isParked = parkingLotSystem.park(new Object());
-        Assert.assertTrue(isParked);
-    }
-
-    @Test
-    public void givenAVehicle_WhenUnParked_ShouldReturnTrue() throws ParkingLotException {
-        parkingLotSystem.park(vehicle);
-        boolean isUnParked = parkingLotSystem.unPark(vehicle);
-        Assert.assertTrue(isUnParked);
-    }
-
-    @Test
-    public void givenAWrongVehicle_WhenTriedToUnPark_ShouldReturnFalse() {
-        boolean isUnParked = parkingLotSystem.unPark(new Object());
-        Assert.assertFalse(isUnParked);
-    }
-
-    @Test
-    public void givenAVehicle_WhenAlreadyParkedAndTriedToParkAgain_ShouldThrowException() {
+    public void givenOwnersVehicle_WhenParked_ShouldReturnTrue() {
         try {
             parkingLotSystem.park(vehicle);
-            boolean isParked = parkingLotSystem.park(vehicle);
-        } catch ( ParkingLotException e) {
+            boolean isParked = parkingLotSystem.isVehicleParked(vehicle);
+            Assert.assertTrue(isParked);
+        } catch (ParkingLotException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void givenOwnersVehicle_WhenAlreadyParked_ShouldReturnFalse() {
+        try {
+            parkingLotSystem.park(vehicle);
+            parkingLotSystem.park(new Object());
+            boolean isParked = parkingLotSystem.isVehicleParked(vehicle);
+            Assert.assertEquals(false, isParked);
+        } catch (ParkingLotException e) {
             Assert.assertEquals(ParkingLotException.ExceptionType.PARKING_LOT_IS_FULL, e.type);
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void givenOwnersVehicle_WhenUnParked_ShouldReturnTrue() {
+        try {
+            parkingLotSystem.unPark(vehicle);
+            boolean isUnparked = parkingLotSystem.isVehicleUnparked(vehicle);
+            Assert.assertTrue(isUnparked);
+        } catch (ParkingLotException e) {
+            Assert.assertEquals(ParkingLotException.ExceptionType.PARKING_LOT_EMPTY, e.type);
         }
     }
 }
