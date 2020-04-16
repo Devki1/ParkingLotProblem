@@ -15,13 +15,13 @@ public class ParkingLotTest {
     }
 
     @Test
-    public void givenAVehicle_WhenParked_ShouldReturnTrue() {
+    public void givenAVehicle_WhenParked_ShouldReturnTrue() throws  ParkingLotException {
         boolean isParked = parkingLotSystem.park(new Object());
         Assert.assertTrue(isParked);
     }
 
     @Test
-    public void givenAVehicle_WhenUnParked_ShouldReturnTrue() {
+    public void givenAVehicle_WhenUnParked_ShouldReturnTrue() throws ParkingLotException {
         parkingLotSystem.park(vehicle);
         boolean isUnParked = parkingLotSystem.unPark(vehicle);
         Assert.assertTrue(isUnParked);
@@ -31,5 +31,15 @@ public class ParkingLotTest {
     public void givenAWrongVehicle_WhenTriedToUnPark_ShouldReturnFalse() {
         boolean isUnParked = parkingLotSystem.unPark(new Object());
         Assert.assertFalse(isUnParked);
+    }
+
+    @Test
+    public void givenAVehicle_WhenAlreadyParkedAndTriedToParkAgain_ShouldThrowException() {
+        try {
+            parkingLotSystem.park(vehicle);
+            boolean isParked = parkingLotSystem.park(vehicle);
+        } catch ( ParkingLotException e) {
+            Assert.assertEquals(ParkingLotException.ExceptionType.PARKING_LOT_IS_FULL, e.type);
+        }
     }
 }
