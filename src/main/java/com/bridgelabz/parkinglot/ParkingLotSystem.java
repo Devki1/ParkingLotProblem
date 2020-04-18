@@ -1,35 +1,180 @@
 package com.bridgelabz.parkinglot;
 
+import com.bridgelabz.parkinglot.service.ParkingLotException;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class ParkingLotSystem {
-    // Variable
-    private Object vehicle;
+    private int parkingLotSize;
+    private String vehicleName;
+    private List<String> parkingLot;
 
-    public void park(Object vehicle) throws ParkingLotException {
-        if (this.vehicle != null)
-            throw new ParkingLotException(ParkingLotException.ExceptionType.PARKING_LOT_IS_FULL, "Parking lot is full");
-        this.vehicle = vehicle;
+    public ParkingLotSystem(int parkingLotSize) {
+        this.parkingLotSize = parkingLotSize;
+        this.parkingLot = new ArrayList<String>();
     }
 
-    // This method is used for unparking lot
-    public void unPark(Object vehicle) throws ParkingLotException {
-        if (this.vehicle == null)
-            throw new ParkingLotException(ParkingLotException.ExceptionType.PARKING_LOT_EMPTY, "Parking is empty");
-        if (this.vehicle.equals(vehicle)) {
-            this.vehicle = null;
-        }
+    public void park(String vehicle) throws ParkingLotException {
+        if (parkingLot.size() >= parkingLotSize)
+            throw new ParkingLotException(ParkingLotException.ExceptionType.PARKING_LOT_FULL, "PARKING LOT IS FULL");
+        this.vehicleName = vehicle;
+        parkingLot.add(vehicleName);
     }
 
-    // This method is used for Parking vehicle
-    public boolean isVehicleParked(Object vehicle) {
-        if (this.vehicle.equals(vehicle))
+    public void unPark(String vehicle) throws ParkingLotException {
+        if (!(parkingLot.contains(vehicle)))
+            throw new ParkingLotException(ParkingLotException.ExceptionType.VEHICLE_ALREADY_UNPARKED_OR_WRONG_VEHICLE, "VEHICLE IS ALREADY UNPARKED");
+        parkingLot.remove(vehicle);
+    }
+
+    public boolean isVehicleParked() {
+        if (parkingLot.contains(vehicleName))
             return true;
         return false;
     }
-
-    // This method is used for unparking vehicle
-    public boolean isVehicleUnparked(Object vehicle) {
-        if (this.vehicle != vehicle) return true;
-        return false;
-    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
