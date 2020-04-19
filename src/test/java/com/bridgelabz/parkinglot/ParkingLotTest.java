@@ -114,4 +114,16 @@ public class ParkingLotTest {
         parkingLotSystem.park("Maruti Swift Dzire");
         Assert.assertFalse(airportSecurity.isParkingFull());
     }
+
+    @Test
+    public void givenParkingLotIsFull_IfItHasSpaceAgain_OwnerShouldShowVacantSign() throws ParkingLotException {
+        parkingLotSystem.register(owner);
+        parkingLotSystem.park("Tata Indigo CS");
+        parkingLotSystem.park("Toyota Fortuner");
+        parkingLotSystem.park("Maruti Swift Dzire");
+        parkingLotSystem.park("Tata Hexa");
+        parkingLotSystem.park("Maruti 800");
+        parkingLotSystem.unPark("Maruti Swift Dzire");
+        Assert.assertEquals(owner.getFlag(), ParkingLotOwner.Flag.PARKING_IS_VACANT);
+    }
 }
