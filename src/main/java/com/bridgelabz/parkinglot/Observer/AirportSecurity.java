@@ -1,5 +1,9 @@
 package com.bridgelabz.parkinglot.Observer;
 
+import com.bridgelabz.parkinglot.service.ParkingLotSystem;
+
+import java.util.HashMap;
+
 public class AirportSecurity  implements ParkingLotObserver {
 
     boolean isParkingFull;
@@ -9,7 +13,7 @@ public class AirportSecurity  implements ParkingLotObserver {
     }
 
     @Override
-    public void sendParkingStatus(int currentOccupiedSlots, int parkingLotCapacity) {
-        isParkingFull = (currentOccupiedSlots >= parkingLotCapacity)? true : false;
+    public void sendParkingStatus(HashMap<Integer, String> parkingLot) {
+        isParkingFull = (ParkingLotSystem.isParkingLotFull(parkingLot)) ? true : false;
     }
 }
