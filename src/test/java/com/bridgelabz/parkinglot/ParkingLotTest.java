@@ -29,15 +29,12 @@ public class ParkingLotTest {
         boolean isVehicleParked = parkingLotSystem.isVehicleParked();
         Assert.assertTrue(isVehicleParked);
     }
-
     @Test
-    public void givenAVehicle_WhenUnParked_ShouldReturnTrue() throws  ParkingLotException {
+    public void givenAVehicle_WhenUnParked_ShouldReturnTrue() throws ParkingLotException {
         parkingLotSystem.park("Car2");
-        parkingLotSystem.unPark("Car2");
         boolean isVehicleUnParked = parkingLotSystem.unPark("Car2");
         Assert.assertTrue(isVehicleUnParked);
     }
-
     @Test
     public void givenAWrongVehicle_WhenTriedToUnPark_ShouldThrowException() {
 
@@ -125,5 +122,22 @@ public class ParkingLotTest {
         parkingLotSystem.park("Car5");
         parkingLotSystem.unPark("Car3");
         Assert.assertEquals(owner.getFlag(), ParkingLotOwner.Flag.PARKING_IS_FULL);
+    }
+    @Test
+    public void givenCar_IfFoundInParkingLot_ShouldReturnTrue() throws ParkingLotException {
+        parkingLotSystem.park("Car1");
+        parkingLotSystem.park("Car2");
+        parkingLotSystem.park("Car3");
+        boolean isPresent = parkingLotSystem.isVehiclePresentInLot("Car2");
+        Assert.assertTrue(isPresent);
+    }
+
+    @Test
+    public void givenCar_IfNotFoundInParkingLot_ShouldReturnFalse() throws ParkingLotException {
+        parkingLotSystem.park("Car1");
+        parkingLotSystem.park("Car2");
+        parkingLotSystem.park("Car3");
+        boolean isPresent = parkingLotSystem.isVehiclePresentInLot("Car5");
+        Assert.assertFalse(isPresent);
     }
 }
