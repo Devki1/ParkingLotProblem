@@ -1,28 +1,26 @@
 package com.bridgelabz.parkinglot.service;
 
-import com.bridgelabz.parkinglot.Observer.ParkingAttendant;
-import com.bridgelabz.parkinglot.Observer.ParkingLotObserver;
-import com.bridgelabz.parkinglot.Observer.ParkingLotException;
-import com.bridgelabz.parkinglot.Observer.Subject;
+import com.bridgelabz.parkinglot.Observer.*;
 
+import java.time.LocalTime;
 import java.util.*;
 
 public class ParkingLotSystem implements Subject {
-
-    public int parkingLotSize;
+    public int parkingLotCapacity;
     public String vehicleName;
     public HashMap<Integer, String> parkingLot;
-    private List<ParkingLotObserver> observers = new ArrayList<ParkingLotObserver>();
+    private List<ParkingLotObserver> observers = new ArrayList<>();
     ParkingAttendant parkingAttendant = new ParkingAttendant(5);
+    public LocalTime arrivalTime = null;
+    public LocalTime departureTime = null;
 
-    public ParkingLotSystem(int parkingLotSize) {
-        this.parkingLotSize = parkingLotSize;
+    public ParkingLotSystem(int parkingLotCapacity) {
+        this.parkingLotCapacity = parkingLotCapacity;
         this.parkingLot = new HashMap<>();
-        for (int itr = 1; itr <= parkingLotSize; itr++) {
+        for (int itr = 1; itr <= parkingLotCapacity; itr++) {
             parkingLot.put(itr, null);
         }
     }
-
 
     @Override
     public void register(ParkingLotObserver o) {
@@ -45,6 +43,7 @@ public class ParkingLotSystem implements Subject {
     public void park(String vehicle) throws ParkingLotException {
         this.vehicleName = vehicle;
         parkingLot = parkingAttendant.park(vehicleName, parkingLot);
+        arrivalTime = LocalTime.now();
         this.notifyObservers();
     }
 
@@ -56,6 +55,8 @@ public class ParkingLotSystem implements Subject {
         while (parkingLotIterator.hasNext()) {
             if (parkingLotIterator.next().equals(vehicle)) {
                 parkingLotIterator.remove();
+                departureTime = LocalTime.now();
+                this.notifyObservers();
                 return true;
             }
         }
@@ -63,7 +64,7 @@ public class ParkingLotSystem implements Subject {
         return true;
     }
 
-    private boolean isVehiclePresentInLot(String vehicle) {
+    public boolean isVehiclePresentInLot(String vehicle) {
         Iterator<String> parkingLotIterator = getParkingLotIterator(parkingLot);
         while (parkingLotIterator.hasNext()) {
             if (Objects.equals(parkingLotIterator.next(), vehicle))
@@ -81,8 +82,8 @@ public class ParkingLotSystem implements Subject {
     }
 
     public static boolean isParkingLotFull(HashMap<Integer, String> parkingLot) {
-        for (int iteration = 1; iteration <= parkingLot.size(); iteration++) {
-            if (parkingLot.get(iteration) == null)
+        for (int i = 1; i <= parkingLot.size(); i++) {
+            if (parkingLot.get(i) == null)
                 return false;
         }
         return true;
