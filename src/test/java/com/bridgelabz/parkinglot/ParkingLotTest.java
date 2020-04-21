@@ -8,6 +8,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.time.LocalTime;
+
 public class ParkingLotTest {
 
     ParkingLotSystem parkingLotSystem = null;
@@ -20,7 +22,7 @@ public class ParkingLotTest {
         parkingLotSystem = new ParkingLotSystem(5);
         vehicle = new Object();
         owner = new ParkingLotOwner();
-       airportSecurity = new AirportSecurity();
+        airportSecurity = new AirportSecurity();
     }
 
     @Test
@@ -29,12 +31,14 @@ public class ParkingLotTest {
         boolean isVehicleParked = parkingLotSystem.isVehicleParked();
         Assert.assertTrue(isVehicleParked);
     }
+
     @Test
     public void givenAVehicle_WhenUnParked_ShouldReturnTrue() throws ParkingLotException {
         parkingLotSystem.park("Car2");
         boolean isVehicleUnParked = parkingLotSystem.unPark("Car2");
         Assert.assertTrue(isVehicleUnParked);
     }
+
     @Test
     public void givenAWrongVehicle_WhenTriedToUnPark_ShouldThrowException() {
 
@@ -121,8 +125,9 @@ public class ParkingLotTest {
         parkingLotSystem.park("Car4");
         parkingLotSystem.park("Car5");
         parkingLotSystem.unPark("Car3");
-        Assert.assertEquals(owner.getFlag(), ParkingLotOwner.Flag.PARKING_IS_FULL);
+        Assert.assertEquals(owner.getFlag(), ParkingLotOwner.Flag.PARKING_IS_VACANT);
     }
+
     @Test
     public void givenCar_IfFoundInParkingLot_ShouldReturnTrue() throws ParkingLotException {
         parkingLotSystem.park("Car1");
@@ -139,5 +144,13 @@ public class ParkingLotTest {
         parkingLotSystem.park("Car3");
         boolean isPresent = parkingLotSystem.isVehiclePresentInLot("Car5");
         Assert.assertFalse(isPresent);
+    }
+
+    @Test
+    public void givenAVehicle_WhenParkedAndThenUnparked_ShouldReturnArrivalTimeAndDepartureTime() throws ParkingLotException {
+        parkingLotSystem.park("Car1");
+        parkingLotSystem.unPark("Car1");
+        Assert.assertEquals(parkingLotSystem.arrivalTime, LocalTime.now());
+        Assert.assertEquals(parkingLotSystem.departureTime, LocalTime.now());
     }
 }
