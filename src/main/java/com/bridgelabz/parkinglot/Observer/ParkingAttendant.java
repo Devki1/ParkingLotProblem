@@ -2,22 +2,53 @@ package com.bridgelabz.parkinglot.Observer;
 
 import com.bridgelabz.parkinglot.service.ParkingLotSystem;
 
+import java.util.Collections;
 import java.util.HashMap;
 
 public class ParkingAttendant {
+    static HashMap<Integer, HashMap> lotMaps;
+    ParkingLotOwner owner = new ParkingLotOwner();
+    static HashMap<Integer, Object> currentMap = new HashMap<>();
 
-     ParkingLotOwner owner = new ParkingLotOwner();
-    int parkingLotSize = 0;
-
-    public ParkingAttendant(int parkingLotSize) {
-        this.parkingLotSize = parkingLotSize;
+    public Integer getParkingSlot(Object vehicle) {
+        for (HashMap map : this.lotMaps.values()) {
+            for (int i = 1; i <= map.size(); i++)
+                if (map.get(i) == vehicle)
+                    return i;
+        }
+        return null;
     }
 
-    public HashMap<Integer, String> park(String vehicle, HashMap<Integer, String> parkingLot) throws ParkingLotException {
-        Integer emptyParkingSlot = owner.getEmptyParkingSlot(parkingLot);
-        if (ParkingLotSystem.isParkingLotFull(parkingLot))
-            throw new ParkingLotException(ParkingLotException.ExceptionType.PARKING_LOT_FULL, "PARKING LOT IS FULL");
-        parkingLot.put(emptyParkingSlot, vehicle);
-        return parkingLot;
+    public Integer getLotNumber(Object vehicle) {
+        int count = 1;
+        for (HashMap<Integer, Object> map : lotMaps.values()) {
+            if (map.containsValue(vehicle))
+                return count;
+            count++;
+        }
+        return null;
+    }
+
+    public HashMap<Integer, HashMap> parkVehicle(Object vehicle, HashMap<Integer, HashMap> lotMaps) {
+        this.lotMaps = lotMaps;
+        Integer lotNumber = getCurrentMap(lotMaps);
+        this.currentMap = lotMaps.get(lotNumber);
+        owner.getUpdatedMap(this.currentMap);
+        this.currentMap.put(owner.decideParkingSlot(), vehicle);
+        this.lotMaps.put(lotNumber, this.currentMap);
+        return ParkingAttendant.this.lotMaps;
+    }
+
+    private Integer getCurrentMap(HashMap<Integer, HashMap> lotMap) {
+        int maxValue = 0;
+        Integer lotNumber = 0;
+        for (HashMap<Integer, Object> map : lotMap.values()) {
+            int count = Collections.frequency(map.values(), null);
+            if (count >= maxValue) {
+                maxValue = count;
+                lotNumber++;
+            }
+        }
+        return lotNumber;
     }
 }
