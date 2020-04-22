@@ -1,91 +1,79 @@
 package com.bridgelabz.parkinglot.service;
-
 import com.bridgelabz.parkinglot.Observer.*;
-
-import java.time.LocalTime;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ParkingLotSystem implements Subject {
-    public int parkingLotCapacity;
-    public String vehicleName;
-    public HashMap<Integer, String> parkingLot;
-    private List<ParkingLotObserver> observers = new ArrayList<>();
-    ParkingAttendant parkingAttendant = new ParkingAttendant(5);
-    public LocalTime arrivalTime = null;
-    public LocalTime departureTime = null;
+    ArrayList<ParkingLotObserver> observers = new ArrayList<ParkingLotObserver>();
+    ParkingAttendant attendant;
+    ParkingBill parkingBill = new ParkingBill();
+    int count = 0;
+    ParkingLot parkingLot;
+    int lotCapacity;
+    int lotSize;
+    HashMap<Integer, HashMap> lotMaps = new HashMap<Integer, HashMap>();
 
-    public ParkingLotSystem(int parkingLotCapacity) {
-        this.parkingLotCapacity = parkingLotCapacity;
-        this.parkingLot = new HashMap<>();
-        for (int itr = 1; itr <= parkingLotCapacity; itr++) {
-            parkingLot.put(itr, null);
+    public ParkingLotSystem(int lotCapacity, int lotSize) {
+        this.lotSize = lotSize;
+        this.lotCapacity = lotCapacity;
+        parkingLot = new ParkingLot(lotCapacity);
+        for (int i = 1; i <= lotSize; i++) {
+            HashMap<Integer, Object> map = parkingLot.getEmptyParkingLot();
+            lotMaps.put(i, map);
         }
+        attendant = new ParkingAttendant();
     }
 
-    @Override
-    public void register(ParkingLotObserver o) {
-        observers.add(o);
-    }
-
-    @Override
-    public void unRegister(ParkingLotObserver o) {
-        observers.remove(observers.indexOf(o));
+    public void register(ParkingLotObserver obj) {
+        observers.add(obj);
     }
 
     @Override
     public void notifyObservers() {
-        for (ParkingLotObserver observer : observers) {
-            observer.sendParkingStatus(parkingLot);
+        for (Iterator<ParkingLotObserver> it =
+             observers.iterator(); it.hasNext(); ) {
+            ParkingLotObserver o = it.next();
+            o.sendParkingMessage(count, this.lotCapacity);
         }
     }
 
 
-    public void park(String vehicle) throws ParkingLotException {
-        this.vehicleName = vehicle;
-        parkingLot = parkingAttendant.park(vehicleName, parkingLot);
-        arrivalTime = LocalTime.now();
-        this.notifyObservers();
-    }
 
-    public boolean unPark(String vehicle) throws ParkingLotException {
-        if (!isVehiclePresentInLot(vehicle))
-            throw new ParkingLotException(ParkingLotException.ExceptionType.VEHICLE_ALREADY_UNPARKED_OR_WRONG_VEHICLE, "VEHICLE IS ALREADY UNPARKED");
-        Iterator<String> parkingLotIterator = getParkingLotIterator(parkingLot);
-        this.vehicleName = vehicle;
-        while (parkingLotIterator.hasNext()) {
-            if (parkingLotIterator.next().equals(vehicle)) {
-                parkingLotIterator.remove();
-                departureTime = LocalTime.now();
-                this.notifyObservers();
-                return true;
+    public void parkVehicle(Object vehicle, int arrivingHour) throws ParkingLotException {
+        if (count >= lotCapacity * lotSize)
+            throw new ParkingLotException("Parking lot is full.",
+                    ParkingLotException.ExceptionType.NO_PARKING_AVAILABLE);
+        AtomicBoolean vehicleCheck = new AtomicBoolean(false);
+        lotMaps.values().stream().forEach(hashMap -> {
+            if (hashMap.containsValue(vehicle)) {
+                vehicleCheck.set(true);
             }
-        }
+        });
+        if (vehicleCheck.get())
+            throw new ParkingLotException("Vehicle id already present",
+                    ParkingLotException.ExceptionType.VEHICLE_ALREADY_PRESENT);
+        lotMaps = attendant.parkVehicle(vehicle, lotMaps);
+        count++;
+        parkingBill.arrivingHour(arrivingHour);
         this.notifyObservers();
-        return true;
     }
 
-    public boolean isVehiclePresentInLot(String vehicle) {
-        Iterator<String> parkingLotIterator = getParkingLotIterator(parkingLot);
-        while (parkingLotIterator.hasNext()) {
-            if (Objects.equals(parkingLotIterator.next(), vehicle))
+    public boolean isVehicleParked(Object vehicle) {
+        for (HashMap map : lotMaps.values()) {
+            if (map.containsValue(vehicle))
                 return true;
         }
         return false;
     }
 
-    private Iterator<String> getParkingLotIterator(HashMap<Integer, String> parkingLot) {
-        return parkingLot.values().iterator();
-    }
-
-    public boolean isVehicleParked() {
-        return parkingLot.containsValue(vehicleName);
-    }
-
-    public static boolean isParkingLotFull(HashMap<Integer, String> parkingLot) {
-        for (int i = 1; i <= parkingLot.size(); i++) {
-            if (parkingLot.get(i) == null)
-                return false;
+    public boolean unParkVehicle(Object vehicle, Integer parkingSlot, Integer parkingLotNumber, int departingHour) {
+        if (lotMaps.get(parkingLotNumber).containsValue(vehicle)) {
+            lotMaps.get(parkingLotNumber).put(parkingSlot, null);
+            count--;
+            parkingBill.departureHour(departingHour);
+            this.notifyObservers();
+            return true;
         }
-        return true;
+        return false;
     }
 }
