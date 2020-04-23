@@ -1,5 +1,4 @@
 package com.bridgelabz.enumeration;
-
 import java.time.LocalTime;
 
 public class Slot {
