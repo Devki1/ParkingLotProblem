@@ -2,10 +2,11 @@ package com.bridgelabz.service;
 
 import com.bridgelabz.Observer.AirportSecurity;
 import com.bridgelabz.Observer.ParkingLotException;
-import com.bridgelabz.Observer.ParkingLotObserver;
 import com.bridgelabz.Observer.ParkingLotOwner;
-import com.bridgelabz.enumeration.Slot;
-import com.bridgelabz.enumeration.Vehicle;
+import com.bridgelabz.entity.DriverType;
+import com.bridgelabz.entity.Slot;
+import com.bridgelabz.entity.Vehicle;
+import com.bridgelabz.entity.VehicleType;
 import com.bridgelabz.utility.ParkingAttendant;
 import com.bridgelabz.utility.ParkingLotSystemUtilities;
 
@@ -13,6 +14,7 @@ import java.time.LocalTime;
 import java.util.HashMap;
 
 public class ParkingLotSystem {
+
 
     public int noOfSlotsPerLot;
     public LocalTime arrivalTime;
@@ -39,8 +41,8 @@ public class ParkingLotSystem {
         return vehicleData.containsValue(vehicle);
     }
 
-    public void park(Vehicle vehicle) throws ParkingLotException {
-        vehicleData = parkingAttendant.park(vehicle);
+    public void park(Vehicle vehicle, DriverType driverType, VehicleType vehicleType) throws ParkingLotException {
+        vehicleData = parkingAttendant.park(vehicle, driverType, vehicleType);
     }
 
     public void unPark(Vehicle vehicle) throws ParkingLotException {
