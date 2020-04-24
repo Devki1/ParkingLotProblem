@@ -10,20 +10,16 @@ import com.bridgelabz.entity.VehicleType;
 import com.bridgelabz.utility.ParkingAttendant;
 import com.bridgelabz.utility.ParkingLotSystemUtilities;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ParkingLotSystem {
-
-
     public int noOfSlotsPerLot;
     public LocalTime arrivalTime;
-    ParkingAttendant parkingAttendant = null;
-    ParkingLotSystemUtilities parkingUtilities = null;
-    public HashMap<Slot, Vehicle> vehicleData = null;
+    ParkingAttendant parkingAttendant;
+    ParkingLotSystemUtilities parkingUtilities;
+    public HashMap<Slot, Vehicle> vehicleData;
 
     public ParkingLotSystem(int parkingLotCapacity, int noOfParkingLots) {
         this.parkingUtilities = new ParkingLotSystemUtilities(parkingLotCapacity, noOfParkingLots);
@@ -71,21 +67,22 @@ public class ParkingLotSystem {
         return count;
     }
 
-    public int getBlueCars() {
-        ArrayList blueCars = new ArrayList();
-        for (Map.Entry<Slot, Vehicle> entry : vehicleData.entrySet()) {
-            if (entry.getValue().colour.equals("Blue")) {
-                blueCars.add(entry);
-            }
-        }
-        return blueCars.size();
-    }
-
     public int getBlueToyotaCars() {
         int count = 0;
         for (Map.Entry<Slot, Vehicle> entry : vehicleData.entrySet()) {
             Vehicle value = entry.getValue();
             if (value.brand.equals("TOYOTA") && value.colour.equals("Blue")) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public int getBmwCars() {
+        int count = 0;
+        for (Map.Entry<Slot, Vehicle> entry : vehicleData.entrySet()) {
+            Vehicle value = entry.getValue();
+            if (value.brand.equals("Bmw")) {
                 count++;
             }
         }
