@@ -209,4 +209,14 @@ public class ParkingLotTest {
         Assert.assertEquals(2, parkingLotSystem.getWhiteCars());
     }
 
+    @Test
+    public void givenParkingLotOfVehicles_ShouldReturnNoOfBlueToyotaCars() throws ParkingLotException {
+        parkingLotSystem.park(vehicle1, DriverType.NORMAL, VehicleType.SMALL);
+        parkingLotSystem.park(vehicle2, DriverType.NORMAL, VehicleType.SMALL);
+        parkingLotSystem.park(vehicle3, DriverType.NORMAL, VehicleType.SMALL);
+        parkingLotSystem.park(vehicle4, DriverType.NORMAL, VehicleType.SMALL);
+        parkingLotSystem.park(vehicle5, DriverType.NORMAL, VehicleType.SMALL);
+        Assert.assertEquals(1, parkingLotSystem.getBlueToyotaCars());
+    }
 }
+
