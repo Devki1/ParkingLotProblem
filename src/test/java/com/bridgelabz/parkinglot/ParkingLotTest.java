@@ -20,11 +20,12 @@ public class ParkingLotTest {
     Object vehicle = null;
     ParkingLotOwner owner = null;
     AirportSecurity airportPersonnel = null;
-    Vehicle vehicle1 = new Vehicle("Indigo CS", 1260, "TATA", "Blue");
+    Vehicle vehicle1 = new Vehicle("Indigo CS", 1260, "TATA", "Black");
     Vehicle vehicle2 = new Vehicle("Hexa", 8000, "TATA", "White");
     Vehicle vehicle3 = new Vehicle("Fortuner", 1001, "TOYOTA", "Blue");
     Vehicle vehicle4 = new Vehicle("Honda city", 1786, "HONDA", "White");
-    Vehicle vehicle5 = new Vehicle("Zeep", 3003, "Mahindra", "Black");
+    Vehicle vehicle5 = new Vehicle("8 Series", 3003, "Bmw", "White");
+    Vehicle vehicle6 = new Vehicle("Z4", 1000, "Bmw", "Black");
 
     @Before
     public void setUp() throws Exception {
@@ -206,7 +207,7 @@ public class ParkingLotTest {
         parkingLotSystem.park(vehicle3, DriverType.NORMAL, VehicleType.SMALL);
         parkingLotSystem.park(vehicle4, DriverType.NORMAL, VehicleType.SMALL);
         parkingLotSystem.park(vehicle5, DriverType.NORMAL, VehicleType.SMALL);
-        Assert.assertEquals(2, parkingLotSystem.getWhiteCars());
+        Assert.assertEquals(3, parkingLotSystem.getWhiteCars());
     }
 
     @Test
@@ -217,6 +218,17 @@ public class ParkingLotTest {
         parkingLotSystem.park(vehicle4, DriverType.NORMAL, VehicleType.SMALL);
         parkingLotSystem.park(vehicle5, DriverType.NORMAL, VehicleType.SMALL);
         Assert.assertEquals(1, parkingLotSystem.getBlueToyotaCars());
+    }
+
+    @Test
+    public void givenParkingLot_whenParkedBmwCars_shouldReturnNumberOfBmwCars() throws ParkingLotException {
+        parkingLotSystem.park(vehicle1, DriverType.NORMAL, VehicleType.SMALL);
+        parkingLotSystem.park(vehicle2, DriverType.NORMAL, VehicleType.SMALL);
+        parkingLotSystem.park(vehicle3, DriverType.NORMAL, VehicleType.SMALL);
+        parkingLotSystem.park(vehicle4, DriverType.NORMAL, VehicleType.SMALL);
+        parkingLotSystem.park(vehicle5, DriverType.NORMAL, VehicleType.SMALL);
+        parkingLotSystem.park(vehicle6, DriverType.NORMAL, VehicleType.SMALL);
+        Assert.assertEquals(2, parkingLotSystem.getBmwCars());
     }
 }
 
