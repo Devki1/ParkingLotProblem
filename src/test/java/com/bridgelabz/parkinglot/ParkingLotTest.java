@@ -1,4 +1,5 @@
 package com.bridgelabz.parkinglot;
+
 import com.bridgelabz.Observer.AirportSecurity;
 import com.bridgelabz.Observer.ParkingLotException;
 import com.bridgelabz.Observer.ParkingLotOwner;
@@ -19,11 +20,11 @@ public class ParkingLotTest {
     Object vehicle = null;
     ParkingLotOwner owner = null;
     AirportSecurity airportPersonnel = null;
-    Vehicle vehicle1 = new Vehicle("Indigo CS", "TATA", "Blue");
-    Vehicle vehicle2 = new Vehicle("Hexa", "TATA", "Blue");
-    Vehicle vehicle3 = new Vehicle("Fortuner", "TOYOTA", "Blue");
-    Vehicle vehicle4 = new Vehicle("Honda city", "HONDA", "White");
-    Vehicle vehicle5 = new Vehicle("Zeep", "Mahindra", "Black");
+    Vehicle vehicle1 = new Vehicle("Indigo CS", 1260, "TATA", "Blue");
+    Vehicle vehicle2 = new Vehicle("Hexa", 8000, "TATA", "White");
+    Vehicle vehicle3 = new Vehicle("Fortuner", 1001, "TOYOTA", "Blue");
+    Vehicle vehicle4 = new Vehicle("Honda city", 1786, "HONDA", "White");
+    Vehicle vehicle5 = new Vehicle("Zeep", 3003, "Mahindra", "Black");
 
     @Before
     public void setUp() throws Exception {
@@ -197,4 +198,15 @@ public class ParkingLotTest {
             }
         }
     }
+
+    @Test
+    public void givenParkingLotOfVehicles_ShouldReturnLocationOfWhiteCars() throws ParkingLotException {
+        parkingLotSystem.park(vehicle1, DriverType.NORMAL, VehicleType.SMALL);
+        parkingLotSystem.park(vehicle2, DriverType.NORMAL, VehicleType.SMALL);
+        parkingLotSystem.park(vehicle3, DriverType.NORMAL, VehicleType.SMALL);
+        parkingLotSystem.park(vehicle4, DriverType.NORMAL, VehicleType.SMALL);
+        parkingLotSystem.park(vehicle5, DriverType.NORMAL, VehicleType.SMALL);
+        Assert.assertEquals(2, parkingLotSystem.getWhiteCars());
+    }
+
 }
