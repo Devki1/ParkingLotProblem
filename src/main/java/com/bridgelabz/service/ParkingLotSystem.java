@@ -80,4 +80,15 @@ public class ParkingLotSystem {
         }
         return blueCars.size();
     }
+
+    public int getBlueToyotaCars() {
+        int count = 0;
+        for (Map.Entry<Slot, Vehicle> entry : vehicleData.entrySet()) {
+            Vehicle value = entry.getValue();
+            if (value.brand.equals("TOYOTA") && value.colour.equals("Blue")) {
+                count++;
+            }
+        }
+        return count;
+    }
 }
