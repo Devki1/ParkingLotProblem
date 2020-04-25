@@ -12,53 +12,68 @@ import java.util.List;
 import java.util.Set;
 
 public class ParkingAttendant implements Subject {
-    public int parkingLotCapacity = 0;
-    public int noOfParkingLots = 0;
-    public int noOfSlotsPerLot = 0;
+    public int parkingLotCapacity;
+    public int noOfParkingLots;
+    public int noOfSlotsPerLot;
     public int slotCounter = 0;
-    private List<ParkingLotObserver> observers = new ArrayList< ParkingLotObserver>();
-    public HashMap<Slot, Vehicle> vehicleData;
+    LocalTime localTime = java.time.LocalTime.now();
+    private ArrayList<ParkingLotObserver> observers = new ArrayList<ParkingLotObserver>();
+    public HashMap<Slot, Vehicle> vehicleParkedDetail;
 
     public ParkingAttendant(int parkingLotCapacity, int noOfParkingLots, int noOfSlotsPerLot) {
         this.parkingLotCapacity = parkingLotCapacity;
         this.noOfParkingLots = noOfParkingLots;
         this.noOfSlotsPerLot = noOfSlotsPerLot;
-        this.vehicleData = new HashMap<>();
+        this.vehicleParkedDetail = new HashMap<>();
     }
 
-    @Override
-    public void register(ParkingLotObserver o) {
-        observers.add(o);
-    }
-
-    @Override
-    public void unRegister(ParkingLotObserver o) {
-        observers.remove(observers.indexOf(o));
-    }
-
-    @Override
-    public void notifyObservers(int currentlyOccupiedSlots) {
-        for (ParkingLotObserver observer : observers) {
-            observer.sendParkingStatus(currentlyOccupiedSlots, this.parkingLotCapacity);
-        }
-    }
-
-    public HashMap<Slot, Vehicle> park(Vehicle vehicle, DriverType driverType, VehicleType vehicleType) throws ParkingLotException {
-        if (vehicleData.size() > this.parkingLotCapacity)
-            throw new ParkingLotException(ParkingLotException.ExceptionType.PARKING_LOT_FULL, "PARKING LOT FULL");
+    public HashMap<Slot, Vehicle> attendantPark(Vehicle vehicle, DriverType driverType, VehicleType vehicleType) throws ParkingLotException {
+        if (vehicleParkedDetail.size() > this.parkingLotCapacity)
+            throw new ParkingLotException(ParkingLotException.ExceptionType.PARKING_LOT_FULL, "Parking lot is full");
         if (vehicleType.equals(VehicleType.LARGE))
             largeParking(vehicle, driverType);
         vehicle.setDriverType(driverType);
         vehicle.setVehicleType(vehicleType);
-        Slot slot = new Slot();
         slotCounter = slotCounter + 1;
+        Slot slot = new Slot();
         slot.setSlotID(slotCounter);
-        slot.setArrivalTime(LocalTime.of(11, 10, 37));
+        slot.setArrivalTime(localTime.getHour(), localTime.getMinute());
         ParkingLot lot = new ParkingLot(ParkingLotSystemUtilities.assignLot(slot.getSlotID()));
         slot.setLot(lot);
-        vehicleData.put(slot, vehicle);
-        this.notifyObservers(vehicleData.size());
-        return vehicleData;
+        vehicleParkedDetail.put(slot, vehicle);
+        this.notifyObservers(vehicleParkedDetail.size());
+        return vehicleParkedDetail;
+    }
+
+    public HashMap<Slot, Vehicle> attendantUnPark(Vehicle vehicle) throws ParkingLotException {
+        if (!vehicleParkedDetail.containsValue(vehicle))
+            throw new ParkingLotException(ParkingLotException.ExceptionType.VEHICLE_NOT_PRESENT, "Vehicle is not in parking lot");
+        Set<Slot> slots = vehicleParkedDetail.keySet();
+        for (Slot slot : slots) {
+            if (vehicleParkedDetail.get(slot).equals(vehicle)) {
+                slot.setDepartureTime(localTime.getHour(), localTime.getMinute());
+                vehicleParkedDetail.remove(slot);
+                this.notifyObservers(this.vehicleParkedDetail.size());
+            }
+        }
+        return vehicleParkedDetail;
+    }
+
+    @Override
+    public void register(ParkingLotObserver observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void unRegister(ParkingLotObserver observer) {
+        observers.remove(observers.indexOf(observer));
+    }
+
+    @Override
+    public void notifyObservers(int assignedSlot) {
+        for (ParkingLotObserver vehicleObserver : observers) {
+            vehicleObserver.sendParkingStatus(assignedSlot, this.parkingLotCapacity);
+        }
     }
 
     public void largeParking(Vehicle vehicle, DriverType driverType) {
@@ -67,27 +82,33 @@ public class ParkingAttendant implements Subject {
         Slot slot = new Slot();
         slotCounter = slotCounter + 1;
         slot.setSlotID(slotCounter);
-        slot.setArrivalTime(LocalTime.of(11, 10, 37));
+        slot.setArrivalTime(localTime.getHour(), localTime.getMinute());
         ParkingLot lot = new ParkingLot(ParkingLotSystemUtilities.assignLot(slot.getSlotID()));
         slot.setLot(lot);
-        vehicleData.put(slot, vehicle);
+        vehicleParkedDetail.put(slot, vehicle);
         slotCounter = slotCounter + 1;
         slot.setSlotID(slotCounter);
-        vehicleData.put(slot, vehicle);
-        this.notifyObservers(vehicleData.size());
+        vehicleParkedDetail.put(slot, vehicle);
+        this.notifyObservers(vehicleParkedDetail.size());
     }
 
-    public HashMap<Slot, Vehicle> unPark(Vehicle vehicle) throws ParkingLotException {
-        if (!vehicleData.containsValue(vehicle))
-            throw new ParkingLotException(ParkingLotException.ExceptionType.VEHICLE_NOT_PRESENT, "VEHICLE NOT PRESENT");
-        Set<Slot> slots = vehicleData.keySet();
+    public int getBeforeThirtyMinuteParkedCar() {
+        int counter = 0;
+        int currentHour = localTime.getHour();
+        int currentMinute = localTime.getMinute();
+        Set<Slot> slots = vehicleParkedDetail.keySet();
         for (Slot slot : slots) {
-            if (vehicleData.get(slot).equals(vehicle)) {
-                slot.setDepartureTime(LocalTime.of(12, 19, 56));
-                vehicleData.remove(slot);
-                this.notifyObservers(vehicleData.size());
+            {
+                int hour = 0;
+                int min = 0;
+                hour = currentHour - slot.arrivalHour;
+                min = currentMinute - slot.arrivalMinute;
+                int totalTime = ((hour * 60) + min);
+                if (totalTime <= 30) {
+                    counter++;
+                }
             }
         }
-        return vehicleData;
+        return counter;
     }
 }
