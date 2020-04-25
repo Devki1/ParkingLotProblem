@@ -12,7 +12,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.time.LocalTime;
 import java.util.Map;
 
 public class ParkingLotTest {
@@ -138,9 +137,9 @@ public class ParkingLotTest {
     }
 
     @Test
-    public void givenAVehicle_WhenParkedAndThenUnparked_ShouldReturnArrivalTimeAndDepartureTime() throws ParkingLotException {
+    public void givenAVehicle_whenParkedAndThenUnparked_shouldReturnTotalTimeParked() throws ParkingLotException {
         parkingLotSystem.park(vehicle1, DriverType.NORMAL, VehicleType.SMALL);
-        Assert.assertEquals(parkingLotSystem.getArrivalTime(vehicle1), LocalTime.of(11, 10, 37));
+        Assert.assertEquals(parkingLotSystem.getArrivalTime(vehicle1), 17);
     }
 
     @Test
@@ -149,7 +148,7 @@ public class ParkingLotTest {
         parkingLotSystem.park(vehicle2, DriverType.NORMAL, VehicleType.SMALL);
         parkingLotSystem.park(vehicle3, DriverType.NORMAL, VehicleType.SMALL);
         parkingLotSystem.park(vehicle4, DriverType.NORMAL, VehicleType.SMALL);
-        for (Map.Entry<Slot, Vehicle> entry : parkingLotSystem.vehicleData.entrySet()) {
+        for (Map.Entry<Slot, Vehicle> entry : parkingLotSystem.vehicleParkedDetail.entrySet()) {
             if (entry.getValue().equals(vehicle1)) {
                 Assert.assertEquals(1, entry.getKey().lot.lotID);
                 Assert.assertEquals(1, entry.getKey().slotID);
@@ -176,7 +175,7 @@ public class ParkingLotTest {
         parkingLotSystem.park(vehicle3, DriverType.NORMAL, VehicleType.SMALL);
         parkingLotSystem.park(vehicle4, DriverType.NORMAL, VehicleType.SMALL);
         parkingLotSystem.park(vehicle5, DriverType.HANDICAPPED, VehicleType.SMALL);
-        for (Map.Entry<Slot, Vehicle> entry : parkingLotSystem.vehicleData.entrySet()) {
+        for (Map.Entry<Slot, Vehicle> entry : parkingLotSystem.vehicleParkedDetail.entrySet()) {
             if (entry.getValue().getDriverType().equals(DriverType.HANDICAPPED)) {
                 Assert.assertEquals(1, entry.getKey().lot.lotID);
                 Assert.assertEquals(5, entry.getKey().slotID);
@@ -191,7 +190,7 @@ public class ParkingLotTest {
         parkingLotSystem.park(vehicle3, DriverType.NORMAL, VehicleType.SMALL);
         parkingLotSystem.park(vehicle4, DriverType.NORMAL, VehicleType.SMALL);
         parkingLotSystem.park(vehicle5, DriverType.NORMAL, VehicleType.LARGE);
-        for (Map.Entry<Slot, Vehicle> entry : parkingLotSystem.vehicleData.entrySet()) {
+        for (Map.Entry<Slot, Vehicle> entry : parkingLotSystem.vehicleParkedDetail.entrySet()) {
             if (entry.getValue().getDriverType().equals(VehicleType.LARGE)) {
                 Assert.assertEquals(1, entry.getKey().lot.lotID);
                 Assert.assertEquals(5, entry.getKey().slotID);
@@ -230,5 +229,14 @@ public class ParkingLotTest {
         parkingLotSystem.park(vehicle6, DriverType.NORMAL, VehicleType.SMALL);
         Assert.assertEquals(2, parkingLotSystem.getBmwCars());
     }
-}
 
+    @Test
+    public void givenParkingLot_whenParkedVehicle_shouldReturnLat30MinCaredParked() throws ParkingLotException {
+        parkingLotSystem.park(vehicle1, DriverType.NORMAL, VehicleType.SMALL);
+        parkingLotSystem.park(vehicle2, DriverType.NORMAL, VehicleType.SMALL);
+        parkingLotSystem.park(vehicle3, DriverType.NORMAL, VehicleType.SMALL);
+        parkingLotSystem.park(vehicle4, DriverType.NORMAL, VehicleType.SMALL);
+        parkingLotSystem.park(vehicle5, DriverType.NORMAL, VehicleType.SMALL);
+        Assert.assertEquals(5, parkingLotSystem.getBeforeThirtyMinuteParkedCar());
+    }
+}
