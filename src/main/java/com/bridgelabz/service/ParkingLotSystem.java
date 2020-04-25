@@ -10,66 +10,64 @@ import com.bridgelabz.entity.VehicleType;
 import com.bridgelabz.utility.ParkingAttendant;
 import com.bridgelabz.utility.ParkingLotSystemUtilities;
 
-import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ParkingLotSystem {
     public int noOfSlotsPerLot;
-    public LocalTime arrivalTime;
-    ParkingAttendant parkingAttendant;
-    ParkingLotSystemUtilities parkingUtilities;
-    public HashMap<Slot, Vehicle> vehicleData;
+    public int arrivalTime;
+    ParkingAttendant parkingLotAttendant = null;
+    ParkingLotSystemUtilities assignParkingLot = null;
+    public HashMap<Slot, Vehicle> vehicleParkedDetail = new HashMap<Slot, Vehicle>();
 
     public ParkingLotSystem(int parkingLotCapacity, int noOfParkingLots) {
-        this.parkingUtilities = new ParkingLotSystemUtilities(parkingLotCapacity, noOfParkingLots);
-        this.noOfSlotsPerLot = parkingUtilities.getNoOfSlotsPerLot();
-        this.parkingAttendant = new ParkingAttendant(parkingLotCapacity, noOfParkingLots, parkingUtilities.getNoOfSlotsPerLot());
-        this.vehicleData = new HashMap<>();
-    }
-
-    public void register(ParkingLotOwner owner) {
-        parkingAttendant.register(owner);
-    }
-
-    public void register(AirportSecurity airportPersonnel) {
-        parkingAttendant.register(airportPersonnel);
-    }
-
-    public boolean isVehiclePresentInLot(Vehicle vehicle) {
-        return vehicleData.containsValue(vehicle);
+        this.assignParkingLot = new ParkingLotSystemUtilities(parkingLotCapacity, noOfParkingLots);
+        this.noOfSlotsPerLot = assignParkingLot.getNoOfSlotsPerLot();
+        this.parkingLotAttendant = new ParkingAttendant(parkingLotCapacity, noOfParkingLots, assignParkingLot.getNoOfSlotsPerLot());
     }
 
     public void park(Vehicle vehicle, DriverType driverType, VehicleType vehicleType) throws ParkingLotException {
-        vehicleData = parkingAttendant.park(vehicle, driverType, vehicleType);
+        vehicleParkedDetail = parkingLotAttendant.attendantPark(vehicle, driverType, vehicleType);
     }
 
     public void unPark(Vehicle vehicle) throws ParkingLotException {
-        vehicleData = parkingAttendant.unPark(vehicle);
+        vehicleParkedDetail = parkingLotAttendant.attendantUnPark(vehicle);
     }
 
-    public LocalTime getArrivalTime(Vehicle vehicle) {
-        for (Slot slot : vehicleData.keySet()) {
-            if (vehicleData.get(slot).equals(vehicle)) {
-                arrivalTime = slot.getArrivalTime();
+    public void register(ParkingLotOwner owner) {
+        parkingLotAttendant.register(owner);
+    }
+
+    public void register(AirportSecurity airportPersonnel) {
+        parkingLotAttendant.register(airportPersonnel);
+    }
+
+    public boolean isVehiclePresentInLot(Vehicle vehicle) {
+        return vehicleParkedDetail.containsValue(vehicle);
+    }
+
+    public int getArrivalTime(Vehicle vehicle) {
+        for (Slot slot : vehicleParkedDetail.keySet()) {
+            if (vehicleParkedDetail.get(slot).equals(vehicle)) {
+                arrivalTime = slot.arrivalHour;
             }
         }
         return arrivalTime;
     }
 
     public int getWhiteCars() {
-        int count = 0;
-        for (Map.Entry<Slot, Vehicle> entry : vehicleData.entrySet()) {
+        int counter = 0;
+        for (Map.Entry<Slot, Vehicle> entry : vehicleParkedDetail.entrySet()) {
             if (entry.getValue().colour.equals("White")) {
-                count++;
+                counter++;
             }
         }
-        return count;
+        return counter;
     }
 
     public int getBlueToyotaCars() {
         int count = 0;
-        for (Map.Entry<Slot, Vehicle> entry : vehicleData.entrySet()) {
+        for (Map.Entry<Slot, Vehicle> entry : vehicleParkedDetail.entrySet()) {
             Vehicle value = entry.getValue();
             if (value.brand.equals("TOYOTA") && value.colour.equals("Blue")) {
                 count++;
@@ -79,13 +77,17 @@ public class ParkingLotSystem {
     }
 
     public int getBmwCars() {
-        int count = 0;
-        for (Map.Entry<Slot, Vehicle> entry : vehicleData.entrySet()) {
+        int counter = 0;
+        for (Map.Entry<Slot, Vehicle> entry : vehicleParkedDetail.entrySet()) {
             Vehicle value = entry.getValue();
             if (value.brand.equals("Bmw")) {
-                count++;
+                counter++;
             }
         }
-        return count;
+        return counter;
+    }
+
+    public int getBeforeThirtyMinuteParkedCar() {
+        return parkingLotAttendant.getBeforeThirtyMinuteParkedCar();
     }
 }

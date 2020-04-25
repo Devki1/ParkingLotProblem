@@ -1,8 +1,7 @@
 package com.bridgelabz.utility;
 
 public class ParkingLotSystemUtilities {
-
-public int parkingLotCapacity = 0;
+    public int parkingLotCapacity = 0;
     public static int parkingLotNumber = 0;
     public static int numberOfParkingLots = 0;
 
@@ -17,16 +16,16 @@ public int parkingLotCapacity = 0;
 
     public static int assignLot(int slotID) {
         switch (slotID % numberOfParkingLots) {
-            case 0 :
+            case 0:
                 parkingLotNumber = 4;
                 break;
-            case 1 :
+            case 1:
                 parkingLotNumber = 1;
                 break;
-            case 2 :
+            case 2:
                 parkingLotNumber = 2;
                 break;
-            case 3 :
+            case 3:
                 parkingLotNumber = 3;
         }
         return parkingLotNumber;
