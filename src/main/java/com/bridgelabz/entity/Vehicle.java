@@ -4,13 +4,15 @@ import java.util.Objects;
 
 public class Vehicle {
     public String name;
+    public int plateNumber;
     public String brand;
     public String colour;
     public DriverType driverType;
     public VehicleType vehicleType;
 
-    public Vehicle(String name, String brand, String colour) {
+    public Vehicle(String name, int plateNumber, String brand, String colour) {
         this.name = name;
+        this.plateNumber = plateNumber;
         this.brand = brand;
         this.colour = colour;
     }
@@ -31,11 +33,11 @@ public class Vehicle {
         this.vehicleType = vehicleType;
     }
 
-
     @Override
     public String toString() {
         return "Vehicle{" +
                 "name='" + name + '\'' +
+                ", plateNumber=" + plateNumber +
                 ", brand='" + brand + '\'' +
                 ", colour='" + colour + '\'' +
                 ", driverType=" + driverType +
@@ -46,9 +48,10 @@ public class Vehicle {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Vehicle)) return false;
         Vehicle vehicle = (Vehicle) o;
-        return Objects.equals(name, vehicle.name) &&
+        return plateNumber == vehicle.plateNumber &&
+                Objects.equals(name, vehicle.name) &&
                 Objects.equals(brand, vehicle.brand) &&
                 Objects.equals(colour, vehicle.colour) &&
                 driverType == vehicle.driverType &&
