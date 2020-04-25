@@ -1,34 +1,37 @@
-package com.bridgelabz.enumeration;
-import java.time.LocalTime;
+package com.bridgelabz.entity;
 
 public class Slot {
     public int slotID;
-    public LocalTime arrivalTime;
-    public LocalTime departureTime;
     public ParkingLot lot;
+    public int arrivalHour;
+    public int arrivalMinute;
+    public int departureHour;
+    public int departureMinute;
 
     public int getSlotID() {
         return slotID;
     }
 
-    public void setSlotID(int slotID) {
+      public void setSlotID(int slotID) {
         this.slotID = slotID;
     }
 
-    public LocalTime getArrivalTime() {
-        return arrivalTime;
+    public int getArrivalTime() {
+        return arrivalHour;
     }
 
-    public void setArrivalTime(LocalTime arrivalTime) {
-        this.arrivalTime = arrivalTime;
+    public void setArrivalTime(int arrivalHour, int arrivalMinute) {
+        this.arrivalHour = arrivalHour;
+        this.arrivalMinute = arrivalMinute;
     }
 
-    public LocalTime getDepartureTime() {
-        return departureTime;
+    public int getDepartureTime() {
+        return departureHour;
     }
 
-    public void setDepartureTime(LocalTime departureTime) {
-        this.departureTime = departureTime;
+    public void setDepartureTime(int departureHour, int departureMinute) {
+        this.departureHour = departureHour;
+        this.departureMinute = departureMinute;
     }
 
     public ParkingLot getLot() {
@@ -43,9 +46,11 @@ public class Slot {
     public String toString() {
         return "Slot{" +
                 "slotID=" + slotID +
-                ", arrivalTime=" + arrivalTime +
-                ", departureTime=" + departureTime +
                 ", lot=" + lot +
+                ", arrivalHour=" + arrivalHour +
+                ", arrivalMinute=" + arrivalMinute +
+                ", departureHour=" + departureHour +
+                ", departureMinute=" + departureMinute +
                 '}';
     }
 }
