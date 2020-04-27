@@ -8,7 +8,6 @@ import com.bridgelabz.entity.*;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
 
 public class ParkingAttendant implements Subject {
@@ -16,6 +15,8 @@ public class ParkingAttendant implements Subject {
     public int noOfParkingLots;
     public int noOfSlotsPerLot;
     public int slotCounter = 0;
+    public static double parkedCharge = 0;
+    public static int noOfCarsParkedInLot = 0;
     LocalTime localTime = java.time.LocalTime.now();
     private ArrayList<ParkingLotObserver> observers = new ArrayList<ParkingLotObserver>();
     public HashMap<Slot, Vehicle> vehicleParkedDetail;
@@ -25,6 +26,10 @@ public class ParkingAttendant implements Subject {
         this.noOfParkingLots = noOfParkingLots;
         this.noOfSlotsPerLot = noOfSlotsPerLot;
         this.vehicleParkedDetail = new HashMap<>();
+    }
+
+    public ParkingAttendant() {
+
     }
 
     public HashMap<Slot, Vehicle> attendantPark(Vehicle vehicle, DriverType driverType, VehicleType vehicleType) throws ParkingLotException {
@@ -42,6 +47,7 @@ public class ParkingAttendant implements Subject {
         slot.setLot(lot);
         vehicleParkedDetail.put(slot, vehicle);
         this.notifyObservers(vehicleParkedDetail.size());
+        noOfCarsParkedInLot++;
         return vehicleParkedDetail;
     }
 
@@ -52,6 +58,7 @@ public class ParkingAttendant implements Subject {
         for (Slot slot : slots) {
             if (vehicleParkedDetail.get(slot).equals(vehicle)) {
                 slot.setDepartureTime(localTime.getHour(), localTime.getMinute());
+                this.generateBillOfParkedCar(slot);
                 vehicleParkedDetail.remove(slot);
                 this.notifyObservers(this.vehicleParkedDetail.size());
             }
@@ -110,5 +117,16 @@ public class ParkingAttendant implements Subject {
             }
         }
         return counter;
+    }
+
+    public double generateBillOfParkedCar(Slot slot) {
+        double chargePerMinute = 0.5;
+        int currentHour = localTime.getHour();
+        int currentMinute = localTime.getMinute();
+        int hour = currentHour - slot.arrivalHour;
+        int min = currentMinute - slot.arrivalMinute;
+        int totalTime = ((hour * 60) + min);
+        parkedCharge = totalTime * chargePerMinute;
+        return parkedCharge;
     }
 }
