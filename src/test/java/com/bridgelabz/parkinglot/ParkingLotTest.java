@@ -3,11 +3,9 @@ package com.bridgelabz.parkinglot;
 import com.bridgelabz.Observer.AirportSecurity;
 import com.bridgelabz.Observer.ParkingLotException;
 import com.bridgelabz.Observer.ParkingLotOwner;
-import com.bridgelabz.entity.DriverType;
-import com.bridgelabz.entity.Slot;
-import com.bridgelabz.entity.Vehicle;
-import com.bridgelabz.entity.VehicleType;
+import com.bridgelabz.entity.*;
 import com.bridgelabz.service.ParkingLotSystem;
+import com.bridgelabz.utility.ParkingAttendant;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +17,7 @@ public class ParkingLotTest {
     Object vehicle = null;
     ParkingLotOwner owner = null;
     AirportSecurity airportPersonnel = null;
+    public final int PARKING_LOT_CAPACITY = 100;
     Vehicle vehicle1 = new Vehicle("Indigo CS", 1260, "TATA", "Black");
     Vehicle vehicle2 = new Vehicle("Hexa", 8000, "TATA", "White");
     Vehicle vehicle3 = new Vehicle("Fortuner", 1001, "TOYOTA", "Blue");
@@ -137,9 +136,17 @@ public class ParkingLotTest {
     }
 
     @Test
-    public void givenAVehicle_whenParkedAndThenUnparked_shouldReturnTotalTimeParked() throws ParkingLotException {
+    public void givenAVehicle_whenParkedAndThenUnparked_shouldReturnChargesOfVehicle() throws ParkingLotException {
         parkingLotSystem.park(vehicle1, DriverType.NORMAL, VehicleType.SMALL);
-        Assert.assertEquals(parkingLotSystem.getArrivalTime(vehicle1), 17);
+        parkingLotSystem.unPark(vehicle1);
+        Assert.assertEquals(ParkingAttendant.parkedCharge, 0, 0.0);
+    }
+
+    @Test
+    public void givenAVehicle_whenParkedAndThenUnparked_shouldReturnChargesOfVehicle1() throws ParkingLotException {
+        parkingLotSystem.park(vehicle1, DriverType.NORMAL, VehicleType.SMALL);
+        parkingLotSystem.unPark(vehicle1);
+        Assert.assertNotEquals(ParkingAttendant.parkedCharge, 0.5, 0.0);
     }
 
     @Test
@@ -238,5 +245,25 @@ public class ParkingLotTest {
         parkingLotSystem.park(vehicle4, DriverType.NORMAL, VehicleType.SMALL);
         parkingLotSystem.park(vehicle5, DriverType.NORMAL, VehicleType.SMALL);
         Assert.assertEquals(5, parkingLotSystem.getBeforeThirtyMinuteParkedCar());
+    }
+
+    @Test
+    public void givenParkingLot_whenParkedVehicle_shouldReturnTotalCarsParkedOnLot() throws ParkingLotException {
+        parkingLotSystem.park(vehicle1, DriverType.NORMAL, VehicleType.SMALL);
+        parkingLotSystem.park(vehicle2, DriverType.NORMAL, VehicleType.SMALL);
+        parkingLotSystem.park(vehicle3, DriverType.NORMAL, VehicleType.SMALL);
+        parkingLotSystem.park(vehicle4, DriverType.NORMAL, VehicleType.SMALL);
+        parkingLotSystem.park(vehicle5, DriverType.NORMAL, VehicleType.SMALL);
+        parkingLotSystem.park(vehicle6, DriverType.NORMAL, VehicleType.SMALL);
+        Assert.assertEquals(6, ParkingAttendant.noOfCarsParkedInLot);
+    }
+
+    @Test
+    public void givenParkingLot_whenParkedVehicle_shouldReturnTotalCarsParkedOnLot1() throws ParkingLotException {
+        parkingLotSystem.park(vehicle1, DriverType.NORMAL, VehicleType.SMALL);
+        parkingLotSystem.park(vehicle2, DriverType.NORMAL, VehicleType.SMALL);
+        parkingLotSystem.park(vehicle3, DriverType.NORMAL, VehicleType.SMALL);
+        parkingLotSystem.park(vehicle4, DriverType.NORMAL, VehicleType.SMALL);
+        Assert.assertNotEquals(6, ParkingAttendant.noOfCarsParkedInLot);
     }
 }
